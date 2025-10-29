@@ -1,11 +1,12 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // ignore SSL issues for skunkworks
+
+import cors from "cors";
 import express from "express";
 import fetch from "node-fetch";
-import cors from "cors";
 
 const app = express();
 app.use(cors());
 
-// Proxy route
 app.get("/api/books", async (req, res) => {
   try {
     const query = new URLSearchParams(req.query).toString();
