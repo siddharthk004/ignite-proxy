@@ -1,8 +1,8 @@
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // ignore SSL issues for skunkworks
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // allow unverified SSL
 
-import cors from "cors";
 import express from "express";
 import fetch from "node-fetch";
+import cors from "cors";
 
 const app = express();
 app.use(cors());
@@ -10,13 +10,18 @@ app.use(cors());
 app.get("/api/books", async (req, res) => {
   try {
     const query = new URLSearchParams(req.query).toString();
-    const response = await fetch(`https://skunkworks.ignitesol.com:8000/books?${query}`);
+    const targetUrl = `http://skunkworks.ignitesol.com:8000/books?${query}`;
+    console.log("🔗 Fetching from:", targetUrl);
+
+    const response = await fetch(targetUrl);
+    console.log("📦 Response status:", response.status);
+
     const data = await response.json();
     res.json(data);
   } catch (error) {
-    console.error("Error fetching from external API:", error);
-    res.status(500).json({ error: "Failed to fetch books" });
+    console.error("❌ Error fetching from external API:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.listen(8080, () => console.log("Proxy running on port 8080"));
+app.listen(8080, () => console.log("✅ Proxy running on port 8080"));
